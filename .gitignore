@@ -46,6 +46,7 @@
 *.mp4
 *.webm
 *.png
+!/assets/**
 *.jpg
 *.dds
 *.fbx

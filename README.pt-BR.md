@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo.png" width="140" alt="Logo FFX Mod Studio">
+</p>
+
 <h1 align="center">FFX Phyre Lab</h1>
 
 <p align="center"><b>Reconstruindo tooling nível PhyreEngine para FINAL FANTASY X HD — um byte comprovado por vez.</b></p>
