@@ -13,6 +13,13 @@ Notably:
 - `tools/phyre-exporter/` — link-decoder core extracted verbatim from the
   editor's `animdump` lineage (GPL-3.0).
 
+Project artwork:
+
+- `assets/icons/`, `assets/logo.png`, `assets/social.png`, `*/Assets/app-icon.*`
+  — generated with ChatGPT Images for this project (2026-09-22),
+  post-processed locally (squircle mask, resize set, .ico packing, card
+  composition). No third-party artwork or trademarks embedded.
+
 References used locally (not vendored, not redistributed):
 
 - **noclip.website** Fahrenheit module (MIT) — behavioral reference for the

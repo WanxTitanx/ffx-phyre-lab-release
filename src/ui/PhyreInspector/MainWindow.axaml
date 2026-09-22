@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="PhyreInspector.MainWindow"
+        Icon="/Assets/app-icon.png"
         Title="Phyre Inspector — FFX Lab" Width="1280" Height="760"
         Background="#1A1A22">
   <Grid ColumnDefinitions="280,*,300">
