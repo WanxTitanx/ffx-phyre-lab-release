@@ -1,0 +1,189 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "phyre.project.v1",
+  "title": "Phyre Lab interchange project",
+  "type": "object",
+  "required": ["schema", "source", "nodes", "meshes", "rigs", "animations", "materials", "opaque", "loss"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const": "phyre.project.v1"},
+    "source": {
+      "type": "object",
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"type": "string"},
+        "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "platform": {"type": "string"},
+        "profile": {"type": "string"},
+        "axes": {
+          "type": "object",
+          "properties": {
+            "source_convention": {"type": "string"}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": {"type": "string"},
+          "name": {"type": "string"},
+          "parent": {"type": "string"},
+          "translation": {"type": "array", "items": {"type": "number"}, "minItems": 3, "maxItems": 3},
+          "rotation_quat": {"type": "array", "items": {"type": "number"}, "minItems": 4, "maxItems": 4},
+          "scale": {"type": "array", "items": {"type": "number"}, "minItems": 3, "maxItems": 3},
+          "matrix_col_major": {"type": "array", "items": {"type": "number"}, "minItems": 16, "maxItems": 16},
+          "mesh": {"type": "string"},
+          "camera": {"type": "string"},
+          "light": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "meshes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "primitives", "bounds"],
+        "properties": {
+          "id": {"type": "string"},
+          "name": {"type": "string"},
+          "bounds": {"$ref": "#/$defs/bounds"},
+          "primitives": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["attributes"],
+              "properties": {
+                "attributes": {"type": "object"},
+                "indices": {"type": "array", "items": {"type": "integer"}},
+                "material": {"type": "string"},
+                "mode": {"type": "string", "enum": ["triangles", "triangle_strip"]}
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "rigs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "joints", "root"],
+        "properties": {
+          "id": {"type": "string"},
+          "joints": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id"],
+              "properties": {
+                "id": {"type": "string"},
+                "parent": {"type": "string"},
+                "inverse_bind_matrix": {"type": "array", "items": {"type": "number"}, "minItems": 16, "maxItems": 16}
+              },
+              "additionalProperties": false
+            }
+          },
+          "root": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "animations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "channels"],
+        "properties": {
+          "id": {"type": "string"},
+          "channels": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["target", "path", "times", "values"],
+              "properties": {
+                "target": {"type": "string"},
+                "path": {"type": "string", "enum": ["translation", "rotation", "scale"]},
+                "times": {"type": "array", "items": {"type": "number"}},
+                "values": {"type": "array"},
+                "interpolation": {"type": "string", "enum": ["linear", "step", "cubic"]}
+              },
+              "additionalProperties": false
+            }
+          },
+          "extensions": {
+            "type": "object",
+            "properties": {
+              "ffx_motion": {
+                "type": "object",
+                "required": ["codec"],
+                "properties": {"codec": {"type": "string"}},
+                "additionalProperties": true
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "materials": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": {"type": "string"},
+          "shader": {"type": "string"},
+          "parameters": {"type": "object"},
+          "textures": {"type": "array", "items": {"type": "string"}}
+        },
+        "additionalProperties": false
+      }
+    },
+    "opaque": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["kind", "reason"],
+        "properties": {
+          "node": {"type": "string"},
+          "kind": {"type": "string"},
+          "byte_range": {"type": "array", "items": {"type": "integer"}, "minItems": 2, "maxItems": 2},
+          "base64": {"type": "string"},
+          "reason": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "loss": {
+      "type": "object",
+      "required": ["dropped", "approximated", "unsupported"],
+      "properties": {
+        "dropped": {"type": "array", "items": {"type": "object", "required": ["kind", "reason"]}},
+        "approximated": {"type": "array", "items": {"type": "object", "required": ["field", "error"]}},
+        "unsupported": {"type": "array", "items": {"type": "object", "required": ["feature", "evidence"]}}
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "bounds": {
+      "type": "object",
+      "required": ["min", "max"],
+      "properties": {
+        "min": {"type": "array", "items": {"type": "number"}, "minItems": 3, "maxItems": 3},
+        "max": {"type": "array", "items": {"type": "number"}, "minItems": 3, "maxItems": 3}
+      },
+      "additionalProperties": false
+    }
+  }
+}

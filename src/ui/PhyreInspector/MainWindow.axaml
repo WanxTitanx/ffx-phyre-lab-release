@@ -1,0 +1,75 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="PhyreInspector.MainWindow"
+        Title="Phyre Inspector — FFX Lab" Width="1280" Height="760"
+        Background="#1A1A22">
+  <Grid ColumnDefinitions="280,*,300">
+    <!-- Asset browser -->
+    <Border Grid.Column="0" Background="#22222C" Padding="6">
+      <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Text="Assets" Foreground="#DDD" FontWeight="Bold" Margin="0,0,0,6"/>
+        <TextBox x:Name="RootBox" DockPanel.Dock="Top" Watermark="asset root dir" Text="" Margin="0,0,0,4"/>
+        <Button x:Name="ScanBtn" DockPanel.Dock="Top" Content="Scan" Margin="0,0,0,6"/>
+        <ListBox x:Name="AssetList"/>
+      </DockPanel>
+    </Border>
+
+    <!-- Viewport -->
+    <Border Grid.Column="1" Background="#111118">
+      <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="6" Spacing="12">
+          <CheckBox x:Name="WireChk" Content="Wireframe" Foreground="#CCC"/>
+          <StackPanel Orientation="Horizontal" Spacing="4">
+            <TextBlock Text="Joint:" Foreground="#CCC" VerticalAlignment="Center"/>
+            <ComboBox x:Name="JointBox" Width="140"/>
+          </StackPanel>
+          <TextBlock x:Name="CamInfo" Foreground="#888" VerticalAlignment="Center"/>
+        </StackPanel>
+        <Image x:Name="Viewport" Stretch="None"/>
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="6" Spacing="8">
+          <ComboBox x:Name="ClipBox" Width="180"/>
+          <Button x:Name="PlayBtn" Content="Play" Width="60"/>
+          <Slider x:Name="TimeSlider" Width="260" Minimum="0" Maximum="1"/>
+          <TextBlock x:Name="TimeLabel" Foreground="#888" VerticalAlignment="Center" Text="no animation"/>
+        </StackPanel>
+      </DockPanel>
+    </Border>
+
+    <!-- Hierarchy + transform + diagnostics -->
+    <Border Grid.Column="2" Background="#22222C" Padding="6">
+      <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Text="Hierarchy" Foreground="#DDD" FontWeight="Bold" Margin="0,0,0,6"/>
+        <TreeView x:Name="Hierarchy" Height="240"/>
+        <Border DockPanel.Dock="Bottom" Background="#2C2222" Padding="6" CornerRadius="4">
+          <TextBlock x:Name="Diag" Foreground="#FF9C9C" TextWrapping="Wrap" Text="No asset loaded."/>
+        </Border>
+        <StackPanel DockPanel.Dock="Bottom" Margin="0,6" Spacing="4">
+          <TextBlock Text="Transform (deg euler)" Foreground="#DDD" FontWeight="Bold"/>
+          <TextBlock x:Name="SelLabel" Foreground="#AAA" Text="no node selected"/>
+          <StackPanel Orientation="Horizontal" Spacing="4">
+            <TextBlock Text="T" Foreground="#CCC" VerticalAlignment="Center"/>
+            <TextBox x:Name="Tx" Width="62"/><TextBox x:Name="Ty" Width="62"/><TextBox x:Name="Tz" Width="62"/>
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Spacing="4">
+            <TextBlock Text="R" Foreground="#CCC" VerticalAlignment="Center"/>
+            <TextBox x:Name="Rx" Width="62"/><TextBox x:Name="Ry" Width="62"/><TextBox x:Name="Rz" Width="62"/>
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Spacing="4">
+            <TextBlock Text="S" Foreground="#CCC" VerticalAlignment="Center"/>
+            <TextBox x:Name="Sx" Width="62"/><TextBox x:Name="Sy" Width="62"/><TextBox x:Name="Sz" Width="62"/>
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Spacing="4">
+            <Button x:Name="ApplyBtn" Content="Apply"/>
+            <Button x:Name="ResetBtn" Content="Reset Pose"/>
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Spacing="4">
+            <Button x:Name="UndoBtn" Content="Undo"/>
+            <Button x:Name="RedoBtn" Content="Redo"/>
+            <Button x:Name="SaveSesBtn" Content="Save"/>
+            <Button x:Name="LoadSesBtn" Content="Load"/>
+          </StackPanel>
+        </StackPanel>
+      </DockPanel>
+    </Border>
+  </Grid>
+</Window>

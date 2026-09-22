@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\tools\ffx-map1\Map1.cs" Link="Map1.cs" />
+    <Compile Include="..\..\..\tools\ffx-map1\Actor.cs" Link="Actor.cs" />
+    <Compile Include="..\..\..\tools\ffx-map1\ActorAnim.cs" Link="ActorAnim.cs" />
+    <Compile Include="..\..\..\tools\ffx-map1\ErB.cs" Link="ErB.cs" />
+    <Compile Include="..\..\..\tools\ffx-map1\Png.cs" Link="Png.cs" />
+    <Compile Include="..\..\..\tools\ffx-map1\MapModel.cs" Link="MapModel.cs" />
+    <Compile Include="..\..\..\tools\ffx-map1\Gs.cs" Link="Gs.cs" />
+    <Compile Include="..\..\..\tools\ffx-map1\Particles.cs" Link="Particles.cs" />
+    <Compile Include="..\..\..\tools\ffx-map1\ParticleSim.cs" Link="ParticleSim.cs" />
+    <Compile Include="..\..\..\tools\ffx-map1\Magic.cs" Link="Magic.cs" />
+    <Compile Include="..\..\..\tools\ffx-map1\MagicVm.cs" Link="MagicVm.cs" />
+    <Compile Include="..\..\..\tools\ffx-map1\KernelBin.cs" Link="KernelBin.cs" />
+    <Compile Include="..\..\..\tools\ffx-map1\Atel.cs" Link="Atel.cs" />
+  </ItemGroup>
+</Project>

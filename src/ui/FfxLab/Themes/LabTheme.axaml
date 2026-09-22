@@ -1,0 +1,243 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Styles.Resources>
+    <!-- ============ color tokens (dark professional tool) ============ -->
+    <Color x:Key="LabBgPageColor">#121317</Color>
+    <Color x:Key="LabBgSurfaceColor">#1A1C22</Color>
+    <Color x:Key="LabBgRaisedColor">#22252E</Color>
+    <Color x:Key="LabBgHoverColor">#2A2E3A</Color>
+    <Color x:Key="LabBgPressedColor">#181A20</Color>
+    <Color x:Key="LabBorderColor">#30343F</Color>
+    <Color x:Key="LabBorderStrongColor">#454A58</Color>
+    <Color x:Key="LabTextColor">#E9EBF2</Color>
+    <Color x:Key="LabTextSecondaryColor">#9DA4B4</Color>
+    <Color x:Key="LabTextMutedColor">#6B7280</Color>
+    <Color x:Key="LabAccentColor">#45B8E8</Color>
+    <Color x:Key="LabAccentHoverColor">#5CC6F0</Color>
+    <Color x:Key="LabAccentTextColor">#0A1F2E</Color>
+    <Color x:Key="LabSuccessColor">#3ECF8E</Color>
+    <Color x:Key="LabWarningColor">#E5B545</Color>
+    <Color x:Key="LabDangerColor">#E5606B</Color>
+
+    <SolidColorBrush x:Key="LabBgPage" Color="{StaticResource LabBgPageColor}"/>
+    <SolidColorBrush x:Key="LabBgSurface" Color="{StaticResource LabBgSurfaceColor}"/>
+    <SolidColorBrush x:Key="LabBgRaised" Color="{StaticResource LabBgRaisedColor}"/>
+    <SolidColorBrush x:Key="LabBgHover" Color="{StaticResource LabBgHoverColor}"/>
+    <SolidColorBrush x:Key="LabBgPressed" Color="{StaticResource LabBgPressedColor}"/>
+    <SolidColorBrush x:Key="LabBorder" Color="{StaticResource LabBorderColor}"/>
+    <SolidColorBrush x:Key="LabBorderStrong" Color="{StaticResource LabBorderStrongColor}"/>
+    <SolidColorBrush x:Key="LabText" Color="{StaticResource LabTextColor}"/>
+    <SolidColorBrush x:Key="LabTextSecondary" Color="{StaticResource LabTextSecondaryColor}"/>
+    <SolidColorBrush x:Key="LabTextMuted" Color="{StaticResource LabTextMutedColor}"/>
+    <SolidColorBrush x:Key="LabAccent" Color="{StaticResource LabAccentColor}"/>
+    <SolidColorBrush x:Key="LabAccentHover" Color="{StaticResource LabAccentHoverColor}"/>
+    <SolidColorBrush x:Key="LabAccentText" Color="{StaticResource LabAccentTextColor}"/>
+    <SolidColorBrush x:Key="LabAccentSoft" Color="{StaticResource LabAccentColor}" Opacity="0.16"/>
+    <SolidColorBrush x:Key="LabSuccess" Color="{StaticResource LabSuccessColor}"/>
+    <SolidColorBrush x:Key="LabWarning" Color="{StaticResource LabWarningColor}"/>
+    <SolidColorBrush x:Key="LabDanger" Color="{StaticResource LabDangerColor}"/>
+
+    <!-- Fluent control tokens — hover/selected row states -->
+    <SolidColorBrush x:Key="TreeViewItemBackgroundPointerOver" Color="{StaticResource LabBgHoverColor}"/>
+    <SolidColorBrush x:Key="TreeViewItemBackgroundSelected" Color="{StaticResource LabAccentColor}" Opacity="0.18"/>
+    <SolidColorBrush x:Key="TreeViewItemBackgroundSelectedPointerOver" Color="{StaticResource LabAccentColor}" Opacity="0.24"/>
+    <SolidColorBrush x:Key="TreeViewItemForegroundSelected" Color="{StaticResource LabTextColor}"/>
+    <SolidColorBrush x:Key="ComboBoxItemBackgroundHover" Color="{StaticResource LabBgHoverColor}"/>
+    <SolidColorBrush x:Key="ComboBoxItemBackgroundSelected" Color="{StaticResource LabAccentColor}" Opacity="0.18"/>
+    <SolidColorBrush x:Key="ListBoxItemBackgroundSelected" Color="{StaticResource LabAccentColor}" Opacity="0.18"/>
+    <SolidColorBrush x:Key="ListBoxItemBackgroundSelectedPointerOver" Color="{StaticResource LabAccentColor}" Opacity="0.24"/>
+    <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPointerOver" Color="{StaticResource LabBgHoverColor}"/>
+    <SolidColorBrush x:Key="TextControlSelectionHighlightColor" Color="{StaticResource LabAccentColor}" Opacity="0.35"/>
+    <Color x:Key="SystemAccentColor">#45B8E8</Color>
+
+    <!-- ============ type scale ============ -->
+    <x:Double x:Key="TextXs">11</x:Double>
+    <x:Double x:Key="TextSm">12.5</x:Double>
+    <x:Double x:Key="TextMd">14</x:Double>
+    <x:Double x:Key="TextLg">17</x:Double>
+    <x:Double x:Key="TextXl">22</x:Double>
+    <FontFamily x:Key="FontMono">Cascadia Code, JetBrains Mono, Consolas, monospace</FontFamily>
+  </Styles.Resources>
+
+  <!-- ============ text role styles ============ -->
+  <Style Selector="TextBlock.caption">
+    <Setter Property="FontSize" Value="{StaticResource TextXs}"/>
+    <Setter Property="Foreground" Value="{StaticResource LabTextMuted}"/>
+  </Style>
+  <Style Selector="TextBlock.secondary">
+    <Setter Property="Foreground" Value="{StaticResource LabTextSecondary}"/>
+  </Style>
+  <Style Selector="TextBlock.section">
+    <Setter Property="FontSize" Value="{StaticResource TextXs}"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="Foreground" Value="{StaticResource LabTextMuted}"/>
+    <Setter Property="LetterSpacing" Value="0.8"/>
+  </Style>
+  <Style Selector="TextBlock.mono">
+    <Setter Property="FontFamily" Value="{StaticResource FontMono}"/>
+    <Setter Property="FontSize" Value="{StaticResource TextXs}"/>
+  </Style>
+  <Style Selector="TextBox.mono">
+    <Setter Property="FontFamily" Value="{StaticResource FontMono}"/>
+    <Setter Property="FontSize" Value="{StaticResource TextXs}"/>
+    <Setter Property="VerticalContentAlignment" Value="Top"/>
+  </Style>
+
+  <!-- ============ focus ring (accent perimeter) ============ -->
+  <Style Selector="Button:focus-visible">
+    <Setter Property="BorderBrush" Value="{StaticResource LabAccent}"/>
+    <Setter Property="BorderThickness" Value="2"/>
+  </Style>
+  <Style Selector="TextBox:focus-visible">
+    <Setter Property="BorderBrush" Value="{StaticResource LabAccent}"/>
+    <Setter Property="BorderThickness" Value="2"/>
+  </Style>
+  <Style Selector="ComboBox:focus-visible">
+    <Setter Property="BorderBrush" Value="{StaticResource LabAccent}"/>
+    <Setter Property="BorderThickness" Value="2"/>
+  </Style>
+
+  <!-- ============ Button ============ -->
+  <Style Selector="Button">
+    <Setter Property="Background" Value="{StaticResource LabBgRaised}"/>
+    <Setter Property="Foreground" Value="{StaticResource LabText}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource LabBorder}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="6"/>
+    <Setter Property="Padding" Value="12,6"/>
+    <Setter Property="MinHeight" Value="32"/>
+    <Setter Property="FontSize" Value="{StaticResource TextSm}"/>
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Background" Duration="0:0:0.12"/>
+        <BrushTransition Property="BorderBrush" Duration="0:0:0.12"/>
+      </Transitions>
+    </Setter>
+  </Style>
+  <Style Selector="Button:pointerover">
+    <Setter Property="Background" Value="{StaticResource LabBgHover}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource LabBorderStrong}"/>
+  </Style>
+  <Style Selector="Button:pressed">
+    <Setter Property="Background" Value="{StaticResource LabBgPressed}"/>
+  </Style>
+  <Style Selector="Button:disabled">
+    <Setter Property="Foreground" Value="{StaticResource LabTextMuted}"/>
+    <Setter Property="Background" Value="{StaticResource LabBgSurface}"/>
+  </Style>
+
+  <!-- primary: the one filled action per view -->
+  <Style Selector="Button.primary">
+    <Setter Property="Background" Value="{StaticResource LabAccent}"/>
+    <Setter Property="Foreground" Value="{StaticResource LabAccentText}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource LabAccent}"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+  </Style>
+  <Style Selector="Button.primary:pointerover">
+    <Setter Property="Background" Value="{StaticResource LabAccentHover}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource LabAccentHover}"/>
+  </Style>
+  <Style Selector="Button.primary:pressed">
+    <Setter Property="Background" Value="{StaticResource LabAccent}"/>
+  </Style>
+
+  <!-- ghost: low-emphasis actions -->
+  <Style Selector="Button.ghost">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderBrush" Value="Transparent"/>
+    <Setter Property="Foreground" Value="{StaticResource LabTextSecondary}"/>
+  </Style>
+  <Style Selector="Button.ghost:pointerover">
+    <Setter Property="Background" Value="{StaticResource LabBgHover}"/>
+    <Setter Property="Foreground" Value="{StaticResource LabText}"/>
+  </Style>
+
+  <!-- danger: destructive only -->
+  <Style Selector="Button.danger">
+    <Setter Property="Foreground" Value="{StaticResource LabDanger}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource LabDanger}"/>
+  </Style>
+
+  <!-- ============ TextBox ============ -->
+  <Style Selector="TextBox">
+    <Setter Property="Background" Value="{StaticResource LabBgRaised}"/>
+    <Setter Property="Foreground" Value="{StaticResource LabText}"/>
+    <Setter Property="CaretBrush" Value="{StaticResource LabAccent}"/>
+    <Setter Property="SelectionBrush" Value="{StaticResource LabAccentSoft}"/>
+    <Setter Property="SelectionForegroundBrush" Value="{StaticResource LabText}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource LabBorder}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="6"/>
+    <Setter Property="Padding" Value="8,6"/>
+    <Setter Property="MinHeight" Value="32"/>
+    <Setter Property="FontSize" Value="{StaticResource TextSm}"/>
+  </Style>
+  <Style Selector="TextBox:focus">
+    <Setter Property="BorderBrush" Value="{StaticResource LabAccent}"/>
+  </Style>
+  <Style Selector="TextBox:pointerover">
+    <Setter Property="BorderBrush" Value="{StaticResource LabBorderStrong}"/>
+  </Style>
+
+  <!-- ============ TreeView ============ -->
+  <Style Selector="TreeView">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Padding" Value="4"/>
+  </Style>
+  <Style Selector="TreeViewItem">
+    <Setter Property="Padding" Value="2,0"/>
+    <Setter Property="MinHeight" Value="26"/>
+  </Style>
+
+  <!-- ============ TabControl — underline tabs ============ -->
+  <Style Selector="TabControl">
+    <Setter Property="Background" Value="Transparent"/>
+  </Style>
+  <Style Selector="TabItem">
+    <Setter Property="Padding" Value="12,8"/>
+    <Setter Property="MinHeight" Value="36"/>
+    <Setter Property="FontSize" Value="{StaticResource TextSm}"/>
+    <Setter Property="Foreground" Value="{StaticResource LabTextSecondary}"/>
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Foreground" Duration="0:0:0.12"/>
+      </Transitions>
+    </Setter>
+  </Style>
+  <Style Selector="TabItem:pointerover">
+    <Setter Property="Foreground" Value="{StaticResource LabText}"/>
+  </Style>
+  <Style Selector="TabItem:selected">
+    <Setter Property="Foreground" Value="{StaticResource LabAccent}"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+  </Style>
+
+  <!-- ============ CheckBox ============ -->
+  <Style Selector="CheckBox">
+    <Setter Property="Foreground" Value="{StaticResource LabTextSecondary}"/>
+    <Setter Property="FontSize" Value="{StaticResource TextSm}"/>
+    <Setter Property="MinHeight" Value="28"/>
+  </Style>
+
+  <!-- ============ ToolTip ============ -->
+  <Style Selector="ToolTip">
+    <Setter Property="Background" Value="{StaticResource LabBgRaised}"/>
+    <Setter Property="Foreground" Value="{StaticResource LabText}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource LabBorderStrong}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="6"/>
+    <Setter Property="Padding" Value="8,6"/>
+    <Setter Property="FontSize" Value="{StaticResource TextXs}"/>
+  </Style>
+
+  <!-- ============ surfaces ============ -->
+  <Style Selector="Border.card">
+    <Setter Property="Background" Value="{StaticResource LabBgSurface}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource LabBorder}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="8"/>
+    <Setter Property="Padding" Value="12"/>
+  </Style>
+</Styles>

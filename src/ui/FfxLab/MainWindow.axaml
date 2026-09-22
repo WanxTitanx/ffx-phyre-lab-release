@@ -1,0 +1,1032 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:FfxLab"
+        x:Class="FfxLab.MainWindow"
+        Title="FFX Phyre Lab"
+        Width="1440" Height="810"
+        MinWidth="1280" MinHeight="720"
+        Background="{StaticResource LabBgPage}">
+
+  <Grid RowDefinitions="44,*,28">
+
+    <!-- ================= header ================= -->
+    <Border Grid.Row="0" Background="{StaticResource LabBgSurface}"
+            BorderBrush="{StaticResource LabBorder}" BorderThickness="0,0,0,1"
+            Padding="14,0">
+      <DockPanel VerticalAlignment="Center">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="10"
+                    DockPanel.Dock="Left">
+          <Border Width="26" Height="26" CornerRadius="6"
+                  Background="{StaticResource LabAccentSoft}" VerticalAlignment="Center">
+            <TextBlock Text="◆" Foreground="{StaticResource LabAccent}"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       FontSize="13"/>
+          </Border>
+          <TextBlock Text="FFX PHYRE LAB" FontWeight="Bold" FontSize="{StaticResource TextMd}"
+                     Foreground="{StaticResource LabText}" VerticalAlignment="Center"
+                     LetterSpacing="0.5"/>
+          <TextBlock Name="Crumb" Classes="secondary" VerticalAlignment="Center"
+                     Margin="8,0,0,0" FontSize="{StaticResource TextSm}"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right"
+                    VerticalAlignment="Center" DockPanel.Dock="Right">
+          <Border Padding="8,4" CornerRadius="10" Background="{StaticResource LabBgRaised}"
+                  BorderBrush="{StaticResource LabBorder}" BorderThickness="1"
+                  VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <Ellipse Name="ServerDot" Width="8" Height="8" Fill="{StaticResource LabTextMuted}"
+                       VerticalAlignment="Center"/>
+              <TextBlock Name="ServerStatus" Text="servidor …" FontSize="{StaticResource TextXs}"
+                         Foreground="{StaticResource LabTextSecondary}" VerticalAlignment="Center"/>
+            </StackPanel>
+          </Border>
+          <Button Classes="ghost" Content="Servidor" Click="OnServer"
+                  ToolTip.Tip="Estado do servidor de dados (CDN fetch-through + overlays)"/>
+        </StackPanel>
+      </DockPanel>
+    </Border>
+
+    <!-- ================= body ================= -->
+    <Grid Grid.Row="1" x:Name="BodyGrid">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="0.85*" MinWidth="220" MaxWidth="360"/>
+        <ColumnDefinition Width="4"/>
+        <ColumnDefinition Width="*" MinWidth="380"/>
+        <ColumnDefinition Width="4"/>
+        <ColumnDefinition Width="0.9*" MinWidth="250" MaxWidth="380"/>
+      </Grid.ColumnDefinitions>
+
+      <!-- explorer -->
+      <Grid Grid.Column="0">
+      <DockPanel Name="ExplorerPanel" Margin="12,12,8,12">
+        <StackPanel DockPanel.Dock="Top" Spacing="8">
+          <DockPanel>
+            <TextBlock Text="CENAS" Classes="section"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+              <TextBlock Name="SceneCount" Classes="caption" VerticalAlignment="Center" Margin="0,0,6,0"/>
+              <Button Classes="ghost" Content="«" Padding="6,0" MinHeight="24" MinWidth="24"
+                      Click="OnExplorerCollapse" ToolTip.Tip="Recolher explorer"/>
+            </StackPanel>
+          </DockPanel>
+          <TextBox Name="FilterBox" Watermark="filtrar cenas…" AutomationProperties.Name="Filtro de cenas" TextChanged="OnFilter"
+                   ToolTip.Tip="Filtra por nome ou categoria (Ctrl+F)"/>
+        </StackPanel>
+        <Border Margin="0,10,0,0" Background="{StaticResource LabBgSurface}"
+                BorderBrush="{StaticResource LabBorder}" BorderThickness="1" CornerRadius="8">
+          <TreeView Name="SceneTree" Margin="4">
+            <TreeView.ItemTemplate>
+              <TreeDataTemplate ItemsSource="{Binding Kids}">
+                <TextBlock Text="{Binding Label}"/>
+              </TreeDataTemplate>
+            </TreeView.ItemTemplate>
+          </TreeView>
+        </Border>
+      </DockPanel>
+      <Border Name="ExplorerRail" IsVisible="False" Margin="0,12,0,12"
+              Background="{StaticResource LabBgSurface}" BorderBrush="{StaticResource LabBorder}"
+              BorderThickness="0,1,1,1" CornerRadius="0,8,8,0" Width="28"
+              HorizontalAlignment="Left">
+        <StackPanel>
+          <Button Classes="ghost" Content="»" Padding="0" MinHeight="28" MinWidth="26"
+                  Click="OnExplorerExpand" ToolTip.Tip="Expandir explorer"/>
+          <LayoutTransformControl HorizontalAlignment="Center" Margin="0,8,0,0">
+            <LayoutTransformControl.LayoutTransform>
+              <RotateTransform Angle="90"/>
+            </LayoutTransformControl.LayoutTransform>
+            <TextBlock Text="CENAS" Classes="section"/>
+          </LayoutTransformControl>
+        </StackPanel>
+      </Border>
+      </Grid>
+
+      <GridSplitter Grid.Column="1" Background="Transparent" Width="4"/>
+
+      <!-- workspace -->
+      <DockPanel Grid.Column="2" Margin="4,12,4,12">
+        <!-- output drawer -->
+        <Border DockPanel.Dock="Bottom" Margin="0,8,0,0"
+                Background="{StaticResource LabBgSurface}" BorderBrush="{StaticResource LabBorder}"
+                BorderThickness="1" CornerRadius="8" Padding="10,8">
+          <DockPanel>
+            <TextBlock Text="SAÍDA" Classes="section" DockPanel.Dock="Top" Margin="0,0,0,6"/>
+            <ScrollViewer MaxHeight="150">
+              <TextBox Name="Output" Classes="mono" IsReadOnly="True" AcceptsReturn="True"
+                       TextWrapping="NoWrap" BorderThickness="0" Background="Transparent"
+                       Text="pronto."/>
+            </ScrollViewer>
+          </DockPanel>
+        </Border>
+        <TabControl Name="Workspace">
+          <TabItem Header="Viewport">
+            <DockPanel>
+              <Border DockPanel.Dock="Top" Padding="8,6" BorderThickness="0,0,0,1"
+                      BorderBrush="{StaticResource LabBorder}" Background="{StaticResource LabBgSurface}">
+                <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+                  <Button Name="FitBtn" IsEnabled="False" Content="Enquadrar" Click="OnVpFit" Margin="0,0,8,4"
+                          ToolTip.Tip="Reenquadrar câmera no conteúdo (R)"/>
+                  <CheckBox Name="OverlayChk" Content="Overlays" IsChecked="True" Margin="0,0,8,4"
+                            ToolTip.Tip="Walkmesh e marcadores de spawn" Click="OnVpOverlay"/>
+                  <CheckBox Name="PlayChk" Content="Animar" IsChecked="True" Margin="0,0,8,4"
+                            ToolTip.Tip="Pausar/retomar animação (Espaço)" Click="OnVpPlay"/>
+                  <ComboBox Name="RasterSel" Width="104" Margin="0,0,8,4" SelectedIndex="2"
+                            ToolTip.Tip="Backend de rasterização: Misto = GPU com fallback pra CPU"
+                            SelectionChanged="OnRasterSel">
+                    <ComboBoxItem Content="CPU"/>
+                    <ComboBoxItem Content="GPU"/>
+                    <ComboBoxItem Content="Misto"/>
+                  </ComboBox>
+                  <Button Name="DetachBtn" IsEnabled="False" Classes="ghost" Content="Desanexar ⧉" Click="OnVpDetach"
+                          ToolTip.Tip="Abrir o viewport numa janela separada"
+                          HorizontalAlignment="Right"/>
+                </WrapPanel>
+              </Border>
+              <local:ViewportControl Name="Viewport"/>
+            </DockPanel>
+          </TabItem>
+
+          <TabItem Header="Cena">
+            <ScrollViewer>
+              <StackPanel Margin="16" Spacing="12">
+                <Border Classes="card">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="AÇÕES DE CENA" Classes="section"/>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <Button Name="OpenViewerBtn" IsEnabled="False" Content="Abrir no viewer noclip"
+                              Click="OnOpenViewer" ToolTip.Tip="Abre a cena no viewer WebGL (browser)"/>
+                      <Button Name="ViewportBtn" IsEnabled="False" Classes="primary" Content="Carregar no viewport"
+                              Click="OnViewport" ToolTip.Tip="Decodifica a MAP1 e renderiza no viewport embutido"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <Button Name="InspectBtn" IsEnabled="False" Content="Inspecionar bins" Click="OnInspect"
+                              ToolTip.Tip="Lista seções, walkmesh e sub-blocos dos dois bins do mapa"/>
+                      <Button Name="LightBtn" IsEnabled="False" Content="Lighting…" Click="OnLighting"
+                              ToolTip.Tip="Entradas de iluminação (fog/clear) do mapa"/>
+                      <Button Name="UndoEditBtn" Content="Desfazer última edição" Click="OnUndoEdit"
+                              ToolTip.Tip="Reverte o último patch de overlay (journal .lab/editlog.jsonl)"/>
+                    </StackPanel>
+                  </StackPanel>
+                </Border>
+                <Border Classes="card">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="EDITAR WALKMESH" Classes="section"/>
+                    <TextBlock Classes="caption" TextWrapping="Wrap"
+                               Text="Escreve o bin corrigido em .lab/overlays (o viewer e o viewport passam a usá-lo)."/>
+                    <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto,Auto,Auto">
+                      <TextBlock Grid.Row="0" Grid.Column="0" Text="Tri de" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="0" Grid.Column="1" Name="WmFrom" Text="0" Margin="8,0,12,4"
+                               AutomationProperties.Name="Tri inicial"/>
+                      <TextBlock Grid.Row="0" Grid.Column="2" Text="até" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="0" Grid.Column="3" Name="WmTo" Text="0" Margin="8,0,0,4"
+                               AutomationProperties.Name="Tri final"/>
+                      <TextBlock Grid.Row="1" Grid.Column="0" Text="pass" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="1" Grid.Column="1" Name="WmPass" Text="" Margin="8,0,12,4"
+                               AutomationProperties.Name="Passability" ToolTip.Tip="0 = passável; vazio = manter"/>
+                      <TextBlock Grid.Row="1" Grid.Column="2" Text="surface" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="1" Grid.Column="3" Name="WmSurf" Text="" Margin="8,0,0,4"
+                               AutomationProperties.Name="Surface type"/>
+                      <TextBlock Grid.Row="2" Grid.Column="0" Text="enc" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="2" Grid.Column="1" Name="WmEnc" Text="" Margin="8,0,12,0"
+                               AutomationProperties.Name="Encounter flag"/>
+                      <TextBlock Grid.Row="2" Grid.Column="2" Text="loc" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="2" Grid.Column="3" Name="WmLoc" Text="" Margin="8,0,0,0"
+                               AutomationProperties.Name="Location flag"/>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <Button Name="WmApplyBtn" Classes="primary" Content="Aplicar e salvar overlay"
+                              Click="OnWalkmeshEdit" ToolTip.Tip="Patch dos tris + escrita no overlay"/>
+                      <Button Name="WmReloadBtn" Content="Recarregar viewport" Click="OnViewport"
+                              ToolTip.Tip="Re-lê o overlay"/>
+                    </StackPanel>
+                    <TextBlock Text="VÉRTICE" Classes="section" Margin="0,4,0,0"/>
+                    <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto">
+                      <TextBlock Grid.Row="0" Grid.Column="0" Text="vértice" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="0" Grid.Column="1" Name="WmVert" Margin="8,0,4,0"
+                               AutomationProperties.Name="Índice do vértice" ToolTip.Tip="0..vertCount-1"/>
+                      <TextBlock Grid.Row="0" Grid.Column="2" Text="x,y,z" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="0" Grid.Column="3" Name="WmVertPos" Margin="8,0,0,0"
+                               AutomationProperties.Name="Nova posição do vértice"
+                               ToolTip.Tip="Posição no espaço do mapa — quantiza para s16×scale ao salvar"/>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <Button Name="WmVertShowBtn" Content="Ler posição" Click="OnWmVertShow"
+                              ToolTip.Tip="Mostra a posição atual do vértice"/>
+                      <Button Name="WmVertApplyBtn" Classes="primary" Content="Mover vértice"
+                              Click="OnWmVertEdit" ToolTip.Tip="Grava a nova posição (s16×scale) + overlay"/>
+                    </StackPanel>
+                    <TextBlock Name="WmStatus" Classes="caption" Text=""/>
+                  </StackPanel>
+                </Border>
+                <Border Classes="card">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="EDITAR LIGHTING" Classes="section"/>
+                    <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto,Auto,Auto">
+                      <TextBlock Grid.Row="0" Grid.Column="0" Text="entrada" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="0" Grid.Column="1" Name="LtEntry" Text="0" Margin="8,0,12,4"
+                               AutomationProperties.Name="Entrada de lighting"/>
+                      <TextBlock Grid.Row="0" Grid.Column="2" Text="clear r,g,b" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="0" Grid.Column="3" Name="LtClear" Text="" Margin="8,0,0,4"
+                               AutomationProperties.Name="Clear color"/>
+                      <TextBlock Grid.Row="1" Grid.Column="0" Text="fog r,g,b" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="1" Grid.Column="1" Name="LtFog" Text="" Margin="8,0,12,4"
+                               AutomationProperties.Name="Fog color"/>
+                      <TextBlock Grid.Row="1" Grid.Column="2" Text="opacidade" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="1" Grid.Column="3" Name="LtOpacity" Text="" Margin="8,0,0,4"
+                               AutomationProperties.Name="Opacidade"/>
+                      <TextBlock Grid.Row="2" Grid.Column="0" Text="near" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="2" Grid.Column="1" Name="LtNear" Text="" Margin="8,0,12,0"
+                               AutomationProperties.Name="Fog near"/>
+                      <TextBlock Grid.Row="2" Grid.Column="2" Text="far" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="2" Grid.Column="3" Name="LtFar" Text="" Margin="8,0,0,0"
+                               AutomationProperties.Name="Fog far"/>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <Button Name="LtApplyBtn" Classes="primary" Content="Aplicar e salvar overlay"
+                              Click="OnLightEdit" ToolTip.Tip="Patch do LIGHTING + escrita no overlay"/>
+                    </StackPanel>
+                    <TextBlock Name="LtStatus" Classes="caption" Text=""/>
+                  </StackPanel>
+                </Border>
+                <Border Classes="card">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="EDITAR OBJETO (LEVEL_PART)" Classes="section"/>
+                    <TextBlock Classes="caption" TextWrapping="Wrap"
+                               Text="Move/rotaciona/troca layer de um objeto da cena. Campos vazios são mantidos; overlay é gravado em .lab/overlays."/>
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+                      <TextBlock Grid.Row="0" Grid.Column="0" Text="objeto" VerticalAlignment="Center" Classes="secondary"/>
+                      <ComboBox Grid.Row="0" Grid.Column="1" Name="PartSel" Margin="8,0,0,4"
+                                SelectionChanged="OnPartSel" AutomationProperties.Name="Level part"
+                                ToolTip.Tip="Objetos LEVEL_PART da cena (carregue no viewport)"/>
+                      <TextBlock Grid.Row="1" Grid.Column="0" Text="atual" VerticalAlignment="Top" Classes="secondary"/>
+                      <TextBlock Grid.Row="1" Grid.Column="1" Name="PartCurrent" Classes="caption"
+                                 TextWrapping="Wrap" Text="carregue uma cena no viewport"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto,Auto">
+                      <TextBlock Grid.Row="0" Grid.Column="0" Text="pos x,y,z" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="0" Grid.Column="1" Name="PartPos" Margin="8,0,12,4"
+                               AutomationProperties.Name="Posição" ToolTip.Tip="File units, ex: 0,-12.5,340"/>
+                      <TextBlock Grid.Row="0" Grid.Column="2" Text="euler x,y,z°" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="0" Grid.Column="3" Name="PartEuler" Margin="8,0,0,4"
+                               AutomationProperties.Name="Rotação euler (graus)" ToolTip.Tip="Graus; gravado em radianos"/>
+                      <TextBlock Grid.Row="1" Grid.Column="0" Text="layer" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="1" Grid.Column="1" Name="PartLayer" Margin="8,0,12,0"
+                               AutomationProperties.Name="Layer" ToolTip.Tip="0..65535"/>
+                      <CheckBox Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Name="PartSky"
+                                Content="skybox" VerticalAlignment="Center"
+                                AutomationProperties.Name="Skybox flag"
+                                ToolTip.Tip="Renderiza como domo de céu (sem depth write)"/>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <Button Name="PartApplyBtn" Classes="primary" Content="Aplicar e salvar overlay"
+                              Click="OnPartEdit" ToolTip.Tip="Patch TRS/layer/skybox do LEVEL_PART + overlay"/>
+                      <Button Name="PartHideBtn" Content="Ocultar objeto" Click="OnPartHide"
+                              ToolTip.Tip="Marca type=0xFFFFFFFF — walkers pulam o objeto; Desfazer restaura"/>
+                      <Button Name="PartDupBtn" Content="Duplicar objeto" Click="OnPartDup"
+                              ToolTip.Tip="Copia o LEVEL_PART + seus MODELs no fim da seção — edite o TRS do clone"/>
+                      <Button Name="PartDelBtn" Content="Remover objeto" Click="OnPartDel"
+                              ToolTip.Tip="Remove o LEVEL_PART + seus MODELs compactando a seção — irreversível salvo pelo histórico"/>
+                    </StackPanel>
+                    <TextBlock Name="PartStatus" Classes="caption" Text=""/>
+                    <TextBlock Text="EFEITO (keyframe)" Classes="section" Margin="0,8,0,0"/>
+                    <TextBlock Classes="caption" TextWrapping="Wrap"
+                               Text="Tracks EFFECT do objeto: MOTION=posição, ROTATION=euler, PARAMETER=shader, TEXTURE=frame. Edita vec3/duração do keyframe — persistido no overlay."/>
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto">
+                      <TextBlock Grid.Row="0" Grid.Column="0" Text="efeito" VerticalAlignment="Center" Classes="secondary"/>
+                      <ComboBox Grid.Row="0" Grid.Column="1" Name="PartFxSel" Margin="8,0,0,4"
+                                SelectionChanged="OnPartFxSel" AutomationProperties.Name="Efeito da part"
+                                ToolTip.Tip="Efeitos referenciados pelo objeto selecionado"/>
+                      <TextBlock Grid.Row="1" Grid.Column="0" Text="keyframe #" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="1" Grid.Column="1" Name="PartFxKey" Margin="8,0,0,4"
+                               AutomationProperties.Name="Keyframe" ToolTip.Tip="0..n-1"/>
+                      <TextBlock Grid.Row="2" Grid.Column="0" Text="vec slot" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="2" Grid.Column="1" Name="PartFxVec" Margin="8,0,0,0"
+                               AutomationProperties.Name="Slot de vec3" ToolTip.Tip="CONSTANT:0, LINEAR:0..1, SPLINE:0..3, COMBINED:0=euler,1=pos"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*,Auto,*">
+                      <TextBlock Grid.Column="0" Text="x,y,z" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Column="1" Name="PartFxVec3" Margin="8,0,12,0"
+                               AutomationProperties.Name="Vec3 do keyframe"/>
+                      <TextBlock Grid.Column="2" Text="duração" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Column="3" Name="PartFxDur" Margin="8,0,0,0"
+                               AutomationProperties.Name="Duração (frames)" ToolTip.Tip="Frames; vazio mantém"/>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <Button Name="PartFxApplyBtn" Content="Aplicar keyframe" Click="OnPartFxApply"
+                              ToolTip.Tip="Grava vec3/duração no overlay da geometria"/>
+                    </StackPanel>
+                    <TextBlock Name="PartFxStatus" Classes="caption" Text=""/>
+                  </StackPanel>
+                </Border>
+                <Border Classes="card">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="VÉRTICE DO MODELO" Classes="section"/>
+                    <TextBlock Classes="caption" TextWrapping="Wrap"
+                               Text="Move um vértice da malha MODEL ou muda sua cor baked (RGBA por vértice). Overlay é gravado em .lab/overlays."/>
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto">
+                      <TextBlock Grid.Row="0" Grid.Column="0" Text="modelo" VerticalAlignment="Center" Classes="secondary"/>
+                      <ComboBox Grid.Row="0" Grid.Column="1" Name="VertModelSel" Margin="8,0,0,4"
+                                SelectionChanged="OnVertModelSel" AutomationProperties.Name="Modelo MODEL"/>
+                      <TextBlock Grid.Row="1" Grid.Column="0" Text="vértice #" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="1" Grid.Column="1" Name="VertIdx" Margin="8,0,0,4"
+                               AutomationProperties.Name="Índice do vértice" ToolTip.Tip="0..N-1 — muda e aplica em 'Ler'"/>
+                      <TextBlock Grid.Row="2" Grid.Column="0" Text="x,y,z" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="2" Grid.Column="1" Name="VertPos" Margin="8,0,0,0"
+                               AutomationProperties.Name="Posição do vértice" ToolTip.Tip="f32 absolutos (file units)"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*,Auto,*">
+                      <TextBlock Grid.Column="0" Text="cor RGBA" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Column="1" Name="VertCol" Margin="8,0,12,0"
+                               AutomationProperties.Name="Cor do vértice" ToolTip.Tip="RRGGBBAA — cor baked por vértice"/>
+                      <Button Grid.Column="2" Grid.ColumnSpan="2" Name="VertReadBtn" Content="Ler"
+                              Click="OnVertRead" ToolTip.Tip="Lê pos+cor do vértice nos campos"/>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <Button Name="VertApplyBtn" Classes="primary" Content="Aplicar vértice"
+                              Click="OnVertEdit" ToolTip.Tip="Grava posição e/ou cor no bin via overlay"/>
+                    </StackPanel>
+                    <TextBlock Name="VertStatus" Classes="caption" Text=""/>
+                  </StackPanel>
+                </Border>
+                <Border Classes="card">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="EDITAR TEXTURA" Classes="section"/>
+                    <TextBlock Classes="caption" TextWrapping="Wrap"
+                               Text="Exporta upload de textura como PNG e re-importa re-encodado (indexadas usam a paleta própria — alpha da CLUT preservado)."/>
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto">
+                      <TextBlock Grid.Row="0" Grid.Column="0" Text="textura" VerticalAlignment="Center" Classes="secondary"/>
+                      <ComboBox Grid.Row="0" Grid.Column="1" Name="TexSel" Margin="8,0,0,0"
+                                SelectionChanged="OnTexSel" AutomationProperties.Name="Textura"
+                                ToolTip.Tip="Uploads type-2 do bin de textura (carregue no viewport)"/>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <Button Name="TexExportBtn" Content="Exportar PNG" Click="OnTexExport"
+                              ToolTip.Tip="Decodifica e grava PNG em .lab/out/tex/"/>
+                      <Button Name="TexImportBtn" Classes="primary" Content="Importar PNG → overlay"
+                              Click="OnTexImport" ToolTip.Tip="Re-encoda o PNG do caminho abaixo nos texels do arquivo"/>
+                    </StackPanel>
+                    <TextBox Name="TexPath" Watermark="caminho do PNG p/ importar (export preenche)"
+                             AutomationProperties.Name="PNG de importação"/>
+                    <TextBlock Text="PALETA DA TEXTURA" Classes="section" Margin="0,4,0,0"/>
+                    <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto,Auto">
+                      <TextBlock Grid.Row="0" Grid.Column="0" Text="índice" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="0" Grid.Column="1" Name="MPalIdx" Margin="8,0,0,4" AutomationProperties.Name="Índice CLUT"
+                               ToolTip.Tip="Índice decodificado (0..255 8bpp, 0..15 4bpp)"/>
+                      <TextBlock Grid.Row="0" Grid.Column="2" Text="r,g,b,a" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="0" Grid.Column="3" Name="MPalColor" Margin="8,0,0,4" AutomationProperties.Name="Cor CLUT"
+                               ToolTip.Tip="0..255 por canal; alpha gravado cru (render dobra)"/>
+                      <TextBlock Grid.Row="1" Grid.Column="0" Text="tingir" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="1" Grid.Column="1" Name="MPalTint" Text="1,1,1,1" Margin="8,0,0,0"
+                               AutomationProperties.Name="Multiplicador CLUT"
+                               ToolTip.Tip="Multiplicadores r,g,b,a aplicados a todas as cores decodificadas"/>
+                      <Button Grid.Row="1" Grid.Column="2" Content="Aplicar cor" Click="OnMPalApply" Margin="8,0,0,0"
+                              ToolTip.Tip="Grava a cor no índice e salva overlay"/>
+                      <Button Grid.Row="1" Grid.Column="3" Content="Tingir tudo" Click="OnMPalTint" Margin="8,0,0,0"
+                              ToolTip.Tip="Multiplica as cores decodificadas e salva overlay"/>
+                    </Grid>
+                    <TextBlock Name="TexStatus" Classes="caption" Text=""/>
+                  </StackPanel>
+                </Border>
+                <Border Classes="card">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="EDITAR EMISSOR PPP" Classes="section"/>
+                    <TextBlock Classes="caption" TextWrapping="Wrap"
+                               Text="Emissores de partícula do mapa (slot +0x38) — posição/escala/delay persistentes via overlay."/>
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
+                      <TextBlock Grid.Row="0" Grid.Column="0" Text="emissor" VerticalAlignment="Center" Classes="secondary"/>
+                      <ComboBox Grid.Row="0" Grid.Column="1" Name="PppEmSel" Margin="8,0,0,4"
+                                SelectionChanged="OnPppEmSel" AutomationProperties.Name="Emissor PPP"
+                                ToolTip.Tip="Emissores do PPP da cena (carregue no viewport)"/>
+                      <TextBlock Grid.Row="1" Grid.Column="0" Text="pos x,y,z" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="1" Grid.Column="1" Name="PppPos" Margin="8,0,0,4"
+                               AutomationProperties.Name="Posição do emissor"/>
+                      <TextBlock Grid.Row="2" Grid.Column="0" Text="euler°" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="2" Grid.Column="1" Name="PppEuler" Margin="8,0,0,4"
+                               AutomationProperties.Name="Euler (graus inteiros)"
+                               ToolTip.Tip="Graus inteiros — o bin guarda i3 em graus"/>
+                      <TextBlock Grid.Row="3" Grid.Column="0" Text="escala" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="3" Grid.Column="1" Name="PppScale" Margin="8,0,0,0"
+                               AutomationProperties.Name="Escala do emissor"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto,Auto">
+                      <TextBlock Grid.Row="0" Grid.Column="0" Text="delay" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="0" Grid.Column="1" Name="PppDelay" Margin="8,0,0,4"
+                               AutomationProperties.Name="Delay do emissor"/>
+                      <TextBlock Grid.Row="0" Grid.Column="2" Text="maxDist" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="0" Grid.Column="3" Name="PppMaxDist" Margin="8,0,0,4"
+                               AutomationProperties.Name="Distância máxima"/>
+                      <TextBlock Grid.Row="1" Grid.Column="0" Text="largura" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="1" Grid.Column="1" Name="PppWidth" Margin="8,0,0,0"
+                               AutomationProperties.Name="Largura"/>
+                      <TextBlock Grid.Row="1" Grid.Column="2" Text="altura" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="1" Grid.Column="3" Name="PppHeight" Margin="8,0,0,0"
+                               AutomationProperties.Name="Altura"/>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <Button Name="PppApplyBtn" Classes="primary" Content="Aplicar e salvar overlay"
+                              Click="OnPppEdit" ToolTip.Tip="Patch do registro 0x50 do emissor + overlay"/>
+                      <Button Name="PppDupBtn" Content="Duplicar emissor" Click="OnPppEmDup"
+                              ToolTip.Tip="Copia o emissor no fim da tabela PPP — ajuste pos/comportamento do clone"/>
+                      <Button Name="PppEmHideBtn" Content="Desativar emissor" Click="OnPppEmHide"
+                              ToolTip.Tip="behavior=-1 — emissor fica inerte; Desfazer restaura"/>
+                      <Button Name="PppEmDelBtn" Content="Remover emissor" Click="OnPppEmDel"
+                              ToolTip.Tip="Remove o registro 0x50 compactando a tabela PPP — histórico/undo restaura"/>
+                    </StackPanel>
+                    <TextBlock Text="DATUM EMIT (count/period persistente)" Classes="section" Margin="0,4,0,0"/>
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+                      <TextBlock Grid.Row="0" Grid.Column="0" Text="entrada" VerticalAlignment="Center" Classes="secondary"/>
+                      <ComboBox Grid.Row="0" Grid.Column="1" Name="PppEmitSel" Margin="8,0,0,4"
+                                SelectionChanged="OnPppEmitSel" AutomationProperties.Name="Entrada de datum emit"
+                                ToolTip.Tip="Entradas emit dos programs (beh/prog/instr/entry)"/>
+                      <TextBlock Grid.Row="1" Grid.Column="0" Text="cnt,per,pat,prog" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="1" Grid.Column="1" Name="PppEmitCP" Margin="8,0,0,0"
+                               AutomationProperties.Name="Count period pattern program" ToolTip.Tip="count,period/mask[,pattern,program] — grava no bin via overlay"/>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <Button Name="PppEmitApplyBtn" Classes="primary" Content="Aplicar datum"
+                              Click="OnPppEmitEdit" ToolTip.Tip="Grava count/period no datum + overlay"/>
+                    </StackPanel>
+                    <TextBlock Text="DATUM COR" Classes="section" Margin="0,4,0,0"/>
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+                      <TextBlock Grid.Row="0" Grid.Column="0" Text="campo" VerticalAlignment="Center" Classes="secondary"/>
+                      <ComboBox Grid.Row="0" Grid.Column="1" Name="PppColSel" Margin="8,0,0,4"
+                                SelectionChanged="OnPppColSel" AutomationProperties.Name="Campo de cor do datum"
+                                ToolTip.Tip="Campos RGBA dos datums glare/ftrail"/>
+                      <TextBlock Grid.Row="1" Grid.Column="0" Text="RRGGBBAA" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="1" Grid.Column="1" Name="PppColHex" Margin="8,0,0,0"
+                               AutomationProperties.Name="Cor RGBA hex" ToolTip.Tip="8 hex dígitos RRGGBBAA"/>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <Button Name="PppColApplyBtn" Classes="primary" Content="Aplicar cor"
+                              Click="OnPppColEdit" ToolTip.Tip="Grava RGBA no datum + overlay"/>
+                    </StackPanel>
+                    <TextBlock Text="DATUM GENÉRICO" Classes="section" Margin="0,4,0,0"/>
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto">
+                      <TextBlock Grid.Row="0" Grid.Column="0" Text="record" VerticalAlignment="Center" Classes="secondary"/>
+                      <ComboBox Grid.Row="0" Grid.Column="1" Name="PppDatSel" Margin="8,0,0,4"
+                                SelectionChanged="OnPppDatSel" AutomationProperties.Name="Record de datum"
+                                ToolTip.Tip="Todos os records de datum editáveis (geo/flip/vec/light/rain/etc)"/>
+                      <TextBlock Grid.Row="1" Grid.Column="0" Text="campo" VerticalAlignment="Center" Classes="secondary"/>
+                      <ComboBox Grid.Row="1" Grid.Column="1" Name="PppDatField" Margin="8,0,0,4"
+                                SelectionChanged="OnPppDatFieldSel" AutomationProperties.Name="Campo do record"/>
+                      <TextBlock Grid.Row="2" Grid.Column="0" Text="valor" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="2" Grid.Column="1" Name="PppDatVal" Margin="8,0,0,0"
+                               AutomationProperties.Name="Valor do campo" ToolTip.Tip="numérico (f32 decimal) ou RRGGBBAA p/ cor"/>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <Button Name="PppDatApplyBtn" Classes="primary" Content="Aplicar campo"
+                              Click="OnPppDatEdit" ToolTip.Tip="Grava campo tipado no datum + overlay"/>
+                    </StackPanel>
+                    <TextBlock Name="PppStatus" Classes="caption" Text=""/>
+                  </StackPanel>
+                </Border>
+                <Border Classes="card">
+                  <StackPanel Spacing="6">
+                    <TextBlock Text="DADOS DA CENA" Classes="section"/>
+                    <TextBox Name="SceneData" Classes="mono" IsReadOnly="True"
+                             AcceptsReturn="True" TextWrapping="NoWrap"
+                             MinHeight="220" VerticalContentAlignment="Top"
+                             Text="selecione uma cena e inspecione."/>
+                  </StackPanel>
+                </Border>
+              </StackPanel>
+            </ScrollViewer>
+          </TabItem>
+
+          <TabItem Header="Atores">
+            <ScrollViewer>
+              <StackPanel Margin="16" Spacing="12">
+                <Border Classes="card">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="ATOR" Classes="section"/>
+                    <Grid ColumnDefinitions="Auto,*,Auto,*">
+                      <TextBlock Grid.Column="0" Text="ID do ator" VerticalAlignment="Center"
+                                 Classes="secondary"/>
+                      <TextBox Grid.Column="1" Name="ActorBox" AutomationProperties.Name="ID do ator" Text="4346" Margin="10,0,0,0"
+                               ToolTip.Tip="ID decimal do ator (erB resolve a pasta/bin)"/>
+                      <TextBlock Grid.Column="2" Text="Anim (hex, vazio=auto)" VerticalAlignment="Center"
+                                 Classes="secondary" Margin="14,0,0,0"/>
+                      <TextBox Grid.Column="3" Name="AnimBox" AutomationProperties.Name="ID de animação" Text="" Margin="10,0,0,0"
+                               ToolTip.Tip="Ex.: 600e1000 — id de animação grupo:seq"/>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <Button Name="ActorViewBtn" Classes="primary" Content="Carregar no viewport"
+                              Click="OnActorViewport" ToolTip.Tip="Renderiza o ator animado no viewport"/>
+                      <Button Name="ActorBtn" Content="Inspecionar" Click="OnActor"
+                              ToolTip.Tip="Parts, bones, texturas e escalas do bin do ator"/>
+                      <Button Name="ActorGltfBtn" Content="glTF + PNG" Click="OnActorGltf"
+                              ToolTip.Tip="Exporta mesh/texturas para .lab/out"/>
+                    </StackPanel>
+                    <TextBlock Text="ANIMAÇÃO/BONES" Classes="section" Margin="0,8,0,0"/>
+                    <Grid ColumnDefinitions="Auto,*,Auto,*">
+                      <TextBlock Grid.Column="0" Text="velocidade" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Column="1" Name="AnimSpeed" Text="1.0" Margin="8,0,12,0" TextChanged="OnAnimSpeed"
+                               AutomationProperties.Name="Velocidade de playback"
+                               ToolTip.Tip="Multiplicador ao vivo (0.1–8; não persiste)"/>
+                      <TextBlock Grid.Column="2" Text="default anim" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Column="3" Name="DefAnimEdit" Margin="8,0,0,0"
+                               AutomationProperties.Name="Default anim (slot,idx,id)"
+                               ToolTip.Tip="slot,idx,animId — ex.: 0,0,600e1000 (persiste no overlay)"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*,Auto,*">
+                      <TextBlock Grid.Column="0" Text="bone map" VerticalAlignment="Center" Classes="secondary"/>
+                      <ComboBox Grid.Column="1" Name="BoneMapSel" Margin="8,0,12,0"
+                                SelectionChanged="OnBoneMapSel" AutomationProperties.Name="Entrada de bone map"
+                                ToolTip.Tip="key→slot do remap (carregue um ator)"/>
+                      <TextBlock Grid.Column="2" Text="novo osso" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Column="3" Name="BoneMapVal" Margin="8,0,0,0"
+                               AutomationProperties.Name="Índice de osso" ToolTip.Tip="u16 — índice de osso do ator"/>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <Button Name="AnimApplyBtn" Content="Aplicar defaults" Click="OnDefAnimApply"
+                              ToolTip.Tip="Grava o default-anim no overlay do ator"/>
+                      <Button Name="BoneMapApplyBtn" Content="Aplicar bone map" Click="OnBoneMapApply"
+                              ToolTip.Tip="Grava o u16 no overlay do ator"/>
+                    </StackPanel>
+                    <TextBlock Name="AnimEditStatus" Classes="caption" Text=""/>
+                  </StackPanel>
+                </Border>
+                <Border Classes="card">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="TEXTURA DO ATOR" Classes="section"/>
+                    <TextBlock Classes="caption" TextWrapping="Wrap"
+                               Text="Exporta a textura do par como PNG e re-importa re-indexado na paleta do próprio par (8bpp eri)."/>
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto">
+                      <TextBlock Grid.Row="0" Grid.Column="0" Text="par" VerticalAlignment="Center" Classes="secondary"/>
+                      <ComboBox Grid.Row="0" Grid.Column="1" Name="ATexSel" Margin="8,0,0,0"
+                                AutomationProperties.Name="Par de textura"
+                                ToolTip.Tip="Pares textura+paleta (carregue um ator no viewport)"/>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <Button Name="ATexExportBtn" Content="Exportar PNG" Click="OnATexExport"
+                              ToolTip.Tip="Decodifica e grava PNG em .lab/out/tex/"/>
+                      <Button Name="ATexImportBtn" Classes="primary" Content="Importar PNG → overlay"
+                              Click="OnATexImport" ToolTip.Tip="Re-indexa o PNG na paleta do par + overlay do bin do ator"/>
+                    </StackPanel>
+                    <TextBox Name="ATexPath" Watermark="caminho do PNG p/ importar"
+                             AutomationProperties.Name="PNG de importação (ator)"/>
+                    <TextBlock Text="PALETA (compartilhada entre pares)" Classes="section" Margin="0,4,0,0"/>
+                    <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto,Auto">
+                      <TextBlock Grid.Row="0" Grid.Column="0" Text="índice" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="0" Grid.Column="1" Name="APalIdx" Margin="8,0,0,4" AutomationProperties.Name="Índice da paleta"
+                               ToolTip.Tip="Slot linear da CLUT 0..255"/>
+                      <TextBlock Grid.Row="0" Grid.Column="2" Text="r,g,b,a" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="0" Grid.Column="3" Name="APalColor" Margin="8,0,0,4" AutomationProperties.Name="Cor da paleta"
+                               ToolTip.Tip="0..255 por canal; alpha gravado cru (render dobra, teto 128)"/>
+                      <TextBlock Grid.Row="1" Grid.Column="0" Text="tingir" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="1" Grid.Column="1" Name="APalTint" Text="1,1,1,1" Margin="8,0,0,0"
+                               AutomationProperties.Name="Multiplicador de paleta"
+                               ToolTip.Tip="Multiplicadores r,g,b,a aplicados às 256 cores"/>
+                      <Button Grid.Row="1" Grid.Column="2" Content="Aplicar cor" Click="OnAPalApply" Margin="8,0,0,0"
+                              ToolTip.Tip="Grava a cor no índice e salva overlay"/>
+                      <Button Grid.Row="1" Grid.Column="3" Content="Tingir tudo" Click="OnAPalTint" Margin="8,0,0,0"
+                              ToolTip.Tip="Multiplica as 256 cores e salva overlay"/>
+                    </Grid>
+                    <TextBlock Name="ATexStatus" Classes="caption" Text=""/>
+                  </StackPanel>
+                </Border>
+                <Border Classes="card">
+                  <StackPanel Spacing="6">
+                    <TextBlock Text="DADOS DO ATOR" Classes="section"/>
+                    <TextBox Name="ActorData" Classes="mono" IsReadOnly="True"
+                             AcceptsReturn="True" TextWrapping="NoWrap"
+                             MinHeight="220" VerticalContentAlignment="Top"
+                             Text="inspecione um ator."/>
+                  </StackPanel>
+                </Border>
+              </StackPanel>
+            </ScrollViewer>
+          </TabItem>
+
+          <TabItem Header="Batalha">
+            <ScrollViewer>
+              <StackPanel Margin="16" Spacing="12">
+                <Border Classes="card">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="ENCONTRO" Classes="section"/>
+                    <Grid ColumnDefinitions="Auto,*">
+                      <TextBlock Grid.Column="0" Text="Arquivo de encontro" VerticalAlignment="Center"
+                                 Classes="secondary"/>
+                      <TextBox Grid.Column="1" Name="EncBox" AutomationProperties.Name="Arquivo de encontro" Text="2" Margin="10,0,0,0"
+                               ToolTip.Tip="Índice em 0e/xxxx.bin — battle lists resolvem a arena"/>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <Button Name="EncViewBtn" Classes="primary" Content="Carregar no viewport"
+                              Click="OnEncViewport" ToolTip.Tip="Arena + monstros posicionados (battle lists)"/>
+                      <Button Name="EncBtn" Content="Inspecionar" Click="OnEnc"
+                              ToolTip.Tip="Monstros e posições do arquivo 0e"/>
+                      <Button Name="FieldViewBtn" Content="Field + atores"
+                              Click="OnFieldViewport"
+                              ToolTip.Tip="Cena de field (13/) + atores do evento EV01 (0c/18*events) nos mapPoints"/>
+                    </StackPanel>
+                  </StackPanel>
+                </Border>
+                <Border Classes="card">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="FIELD/EV01 — TROCAR ATOR" Classes="section"/>
+                    <TextBlock Classes="caption" TextWrapping="Wrap"
+                               Text="Troca qual ator spawna num slot da modelList do evento (overlay field/&lt;ev&gt;.json; carregue 'Field + atores' primeiro)."/>
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+                      <TextBlock Grid.Row="0" Grid.Column="0" Text="slot" VerticalAlignment="Center" Classes="secondary"/>
+                      <ComboBox Grid.Row="0" Grid.Column="1" Name="FldModelSel" Margin="8,0,0,4"
+                                SelectionChanged="OnFldModelSel" AutomationProperties.Name="Slot da modelList"/>
+                      <TextBlock Grid.Row="1" Grid.Column="0" Text="novo pid" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="1" Grid.Column="1" Name="FldModelPid" Margin="8,0,0,0"
+                               AutomationProperties.Name="Novo actor pid" ToolTip.Tip="ID decimal do ator (erB resolve) — vazio restaura vanilla"/>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <Button Name="FldModelApplyBtn" Classes="primary" Content="Aplicar troca"
+                              Click="OnFldModelEdit" ToolTip.Tip="Grava models.&lt;slot&gt; no field/&lt;ev&gt;.json"/>
+                      <Button Name="FldDisasmBtn" Content="Disasm ATEL" Click="OnFldDisasm"
+                              ToolTip.Tip="Exporta o disassembly completo do script do evento para .lab/out/"/>
+                    </StackPanel>
+                    <TextBlock Name="FldAtelInfo" Classes="caption" TextWrapping="Wrap" Text=""/>
+                  </StackPanel>
+                </Border>
+                <Border Classes="card">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="EDITAR POSIÇÃO (overlay)" Classes="section"/>
+                    <TextBlock Classes="caption" TextWrapping="Wrap"
+                               Text="Deltas sobre a posição vanilla; salva em .lab/overlays/.../edits/&lt;enc&gt;.json (contrato do viewer)."/>
+                    <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto,Auto,Auto">
+                      <TextBlock Grid.Row="0" Grid.Column="0" Text="Slot" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="0" Grid.Column="1" Name="EditSlot" Text="0" Margin="8,0,12,4"
+                               AutomationProperties.Name="Slot do monstro" ToolTip.Tip="0..7"/>
+                      <TextBlock Grid.Row="0" Grid.Column="2" Text="ΔY" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="0" Grid.Column="3" Name="EditDY" Text="0" Margin="8,0,0,4"
+                               AutomationProperties.Name="Delta Y"/>
+                      <TextBlock Grid.Row="1" Grid.Column="0" Text="ΔX" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="1" Grid.Column="1" Name="EditDX" Text="0" Margin="8,0,12,4"
+                               AutomationProperties.Name="Delta X"/>
+                      <TextBlock Grid.Row="1" Grid.Column="2" Text="ΔZ" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="1" Grid.Column="3" Name="EditDZ" Text="0" Margin="8,0,0,4"
+                               AutomationProperties.Name="Delta Z"/>
+                      <TextBlock Grid.Row="2" Grid.Column="0" Text="Δheading" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="2" Grid.Column="1" Name="EditDH" Text="0" Margin="8,0,12,0"
+                               AutomationProperties.Name="Delta heading" ToolTip.Tip="radianos"/>
+                      <TextBlock Grid.Row="2" Grid.Column="2" Text="×escala" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="2" Grid.Column="3" Name="EditScale" Text="1" Margin="8,0,0,0"
+                               AutomationProperties.Name="Multiplicador de escala"/>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <Button Name="EditApplyBtn" Classes="primary" Content="Aplicar no viewport"
+                              Click="OnEncEditApply" ToolTip.Tip="Re-monta a batalha com os deltas"/>
+                      <Button Name="EditSaveBtn" Content="Salvar overlay" Click="OnEncEditSave"
+                              ToolTip.Tip="POST /api/edits/&lt;enc&gt; — o viewer passa a ver a edição"/>
+                      <Button Name="EditResetBtn" Content="Resetar" Click="OnEncEditReset"
+                              ToolTip.Tip="Zera os deltas do slot e salva"/>
+                    </StackPanel>
+                    <TextBlock Name="EditStatus" Classes="caption" Text=""/>
+                  </StackPanel>
+                </Border>
+                <Border Classes="card">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="MONSTROS" Classes="section"/>
+                    <TextBlock Classes="caption" TextWrapping="Wrap"
+                               Text="Adicionar/remove slots via overlay (extra/remove no edits.json — vanilla intacta). Clique num monstro no viewport para selecionar o slot; arraste para mover."/>
+                    <Grid ColumnDefinitions="Auto,*">
+                      <TextBlock Grid.Column="0" Text="Monster id" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Column="1" Name="ExtraBox" Text="" Margin="10,0,0,0"
+                               AutomationProperties.Name="Monster id"
+                               ToolTip.Tip="Id do monstro (decimal ou 0x hex) — resolve via erB"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*">
+                      <TextBlock Grid.Column="0" Text="Trocar p/ id" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Column="1" Name="SwapBox" Text="" Margin="10,0,0,0"
+                               AutomationProperties.Name="Id do monstro substituto"
+                               ToolTip.Tip="Troca o monstro do Slot atual por este id (actors.&lt;slot&gt;.monster no overlay)"/>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <Button Name="AddMonBtn" Classes="primary" Content="Adicionar"
+                              Click="OnAddMonster"
+                              ToolTip.Tip="Spawna no centróide do party; arraste para posicionar"/>
+                      <Button Name="SwapMonBtn" Content="Trocar slot" Click="OnSwapMonster"
+                              ToolTip.Tip="Substitui o monstro do Slot pelo id acima (mesmo id = volta ao vanilla)"/>
+                      <Button Name="RemoveMonBtn" Content="Remover slot" Click="OnRemoveMonster"
+                              ToolTip.Tip="Remove o slot atual (vanilla = hide, extra = delete)"/>
+                    </StackPanel>
+                    <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto">
+                      <ComboBox Grid.Row="0" Grid.Column="0" Name="PartyGroup" Width="90" Margin="0,0,8,0"
+                                AutomationProperties.Name="Grupo de spawn" SelectedIndex="0"
+                                ToolTip.Tip="party = onde o jogador fica; other = formação alternativa">
+                        <ComboBoxItem>party</ComboBoxItem>
+                        <ComboBoxItem>other</ComboBoxItem>
+                      </ComboBox>
+                      <TextBox Grid.Row="0" Grid.Column="1" Name="PartyIdx" Text="0" Margin="0,0,8,0"
+                               AutomationProperties.Name="Índice do spawn" ToolTip.Tip="Índice no array do bloco de posições"/>
+                      <TextBox Grid.Row="0" Grid.Column="2" Name="PartyDelta" Text="" Margin="0,0,8,0"
+                               Watermark="dx,dy,dz" AutomationProperties.Name="Delta do spawn"
+                               ToolTip.Tip="Delta sobre a posição vanilla — 0,0,0 reseta"/>
+                      <Button Grid.Row="0" Grid.Column="3" Content="Aplicar" Click="OnPartyEdit"
+                              ToolTip.Tip="Salva o delta do spawn no overlay"/>
+                    </Grid>
+                    <TextBlock Name="MonStatus" Classes="caption" Text=""/>
+                  </StackPanel>
+                </Border>
+                <Border Classes="card">
+                  <StackPanel Spacing="6">
+                    <TextBlock Text="DADOS DO ENCONTRO" Classes="section"/>
+                    <TextBox Name="EncData" Classes="mono" IsReadOnly="True"
+                             AcceptsReturn="True" TextWrapping="NoWrap"
+                             MinHeight="220" VerticalContentAlignment="Top"
+                             Text="inspecione um encontro."/>
+                  </StackPanel>
+                </Border>
+                <Border Classes="card">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="MAGIA / EFEITOS" Classes="section"/>
+                    <Grid ColumnDefinitions="Auto,*">
+                      <TextBlock Grid.Column="0" Text="ID de magia" VerticalAlignment="Center"
+                                 Classes="secondary"/>
+                      <TextBox Grid.Column="1" Name="MagicBox" AutomationProperties.Name="ID de magia" Text="10" Margin="10,0,0,0"/>
+                    </Grid>
+                    <WrapPanel>
+                      <Button Name="MagicBtn" Content="Inspecionar magia" Click="OnMagic"
+                              Margin="0,0,8,0"
+                              ToolTip.Tip="Header + funções do bin 11"/>
+                      <Button Name="MagicVpBtn" Classes="primary" Content="Efeito → viewport" Click="OnMagicViewport"
+                              ToolTip.Tip="Simula o sistema de partículas da magia e toca em loop no viewport"/>
+                    </WrapPanel>
+                    <TextBlock Text="EDIÇÃO AO VIVO (overlay não-destrutivo)" Classes="section" Margin="0,6,0,0"/>
+                    <Grid ColumnDefinitions="Auto,*,Auto,*,Auto,*" RowDefinitions="Auto,Auto,Auto">
+                      <TextBlock Grid.Row="0" Grid.Column="0" Text="Escala" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="0" Grid.Column="1" Name="FxSize" Text="1" Margin="6,0,10,4" AutomationProperties.Name="Escala do efeito"/>
+                      <TextBlock Grid.Row="0" Grid.Column="2" Text="Veloc." VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="0" Grid.Column="3" Name="FxSpeed" Text="1" Margin="6,0,10,4" AutomationProperties.Name="Velocidade do efeito"/>
+                      <TextBlock Grid.Row="0" Grid.Column="4" Text="Alpha" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="0" Grid.Column="5" Name="FxA" Text="1" Margin="6,0,0,4" AutomationProperties.Name="Multiplicador de alpha"/>
+                      <TextBlock Grid.Row="1" Grid.Column="0" Text="R" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="1" Grid.Column="1" Name="FxR" Text="1" Margin="6,0,10,0" AutomationProperties.Name="Tint R"/>
+                      <TextBlock Grid.Row="1" Grid.Column="2" Text="G" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="1" Grid.Column="3" Name="FxG" Text="1" Margin="6,0,10,0" AutomationProperties.Name="Tint G"/>
+                      <TextBlock Grid.Row="1" Grid.Column="4" Text="B" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="1" Grid.Column="5" Name="FxB" Text="1" Margin="6,0,0,0" AutomationProperties.Name="Tint B"/>
+                      <TextBlock Grid.Row="2" Grid.Column="0" Text="Emissão" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="2" Grid.Column="1" Name="FxEmit" Text="1" Margin="6,4,10,0" AutomationProperties.Name="Multiplicador de emissão"
+                               ToolTip.Tip="Multiplica partículas emitidas por pulso"/>
+                      <TextBlock Grid.Row="2" Grid.Column="2" Text="Vida" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="2" Grid.Column="3" Name="FxLife" Text="1" Margin="6,4,10,0" AutomationProperties.Name="Multiplicador de vida"
+                               ToolTip.Tip="Multiplica lifetime de partícula e emissor"/>
+                    </Grid>
+                    <WrapPanel>
+                      <Button Name="FxApplyBtn" Classes="primary" Content="Aplicar ao vivo" Click="OnFxApply" Margin="0,0,8,0"
+                              ToolTip.Tip="Aplica os multiplicadores no efeito em execução — sem tocar no bin"/>
+                      <Button Name="FxSaveBtn" Content="Salvar overlay" Click="OnFxSave"
+                              ToolTip.Tip="Persiste os multiplicadores em .lab/overlays/magic/&lt;id&gt;.json (reaplica no próximo preview)"/>
+                    </WrapPanel>
+                    <TextBlock Text="DATUM EMIT NO BIN (persistente)" Classes="section" Margin="0,4,0,0"/>
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+                      <TextBlock Grid.Row="0" Grid.Column="0" Text="entrada" VerticalAlignment="Center" Classes="secondary"/>
+                      <ComboBox Grid.Row="0" Grid.Column="1" Name="MagEmitSel" Margin="8,0,0,4"
+                                SelectionChanged="OnMagEmitSel" AutomationProperties.Name="Entrada emit da magia"
+                                ToolTip.Tip="Entradas emit do PPP da magia (carregue o efeito no viewport)"/>
+                      <TextBlock Grid.Row="1" Grid.Column="0" Text="cnt,per,pat,prog" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="1" Grid.Column="1" Name="MagEmitCP" Margin="8,0,0,0"
+                               AutomationProperties.Name="Count period pattern program" ToolTip.Tip="count,period/mask[,pattern,program] — grava no bin via overlay"/>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <Button Name="MagEmitApplyBtn" Classes="primary" Content="Aplicar no bin"
+                              Click="OnMagEmitEdit" ToolTip.Tip="Grava count/period no 11/xxxx.bin via overlay"/>
+                    </StackPanel>
+                    <TextBlock Text="DATUM COR" Classes="section" Margin="0,4,0,0"/>
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+                      <TextBlock Grid.Row="0" Grid.Column="0" Text="campo" VerticalAlignment="Center" Classes="secondary"/>
+                      <ComboBox Grid.Row="0" Grid.Column="1" Name="MagColSel" Margin="8,0,0,4"
+                                SelectionChanged="OnMagColSel" AutomationProperties.Name="Campo de cor do datum"
+                                ToolTip.Tip="Campos RGBA dos datums glare/ftrail da magia"/>
+                      <TextBlock Grid.Row="1" Grid.Column="0" Text="RRGGBBAA" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="1" Grid.Column="1" Name="MagColHex" Margin="8,0,0,0"
+                               AutomationProperties.Name="Cor RGBA hex" ToolTip.Tip="8 hex dígitos RRGGBBAA"/>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <Button Name="MagColApplyBtn" Classes="primary" Content="Aplicar cor"
+                              Click="OnMagColEdit" ToolTip.Tip="Grava RGBA no 11/xxxx.bin via overlay"/>
+                    </StackPanel>
+                    <TextBlock Text="DATUM GENÉRICO" Classes="section" Margin="0,4,0,0"/>
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto">
+                      <TextBlock Grid.Row="0" Grid.Column="0" Text="record" VerticalAlignment="Center" Classes="secondary"/>
+                      <ComboBox Grid.Row="0" Grid.Column="1" Name="MagDatSel" Margin="8,0,0,4"
+                                SelectionChanged="OnMagDatSel" AutomationProperties.Name="Record de datum"
+                                ToolTip.Tip="Todos os records de datum editáveis (geo/flip/vec/light/rain/etc)"/>
+                      <TextBlock Grid.Row="1" Grid.Column="0" Text="campo" VerticalAlignment="Center" Classes="secondary"/>
+                      <ComboBox Grid.Row="1" Grid.Column="1" Name="MagDatField" Margin="8,0,0,4"
+                                SelectionChanged="OnMagDatFieldSel" AutomationProperties.Name="Campo do record"/>
+                      <TextBlock Grid.Row="2" Grid.Column="0" Text="valor" VerticalAlignment="Center" Classes="secondary"/>
+                      <TextBox Grid.Row="2" Grid.Column="1" Name="MagDatVal" Margin="8,0,0,0"
+                               AutomationProperties.Name="Valor do campo" ToolTip.Tip="numérico (f32 decimal) ou RRGGBBAA p/ cor"/>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <Button Name="MagDatApplyBtn" Classes="primary" Content="Aplicar campo"
+                              Click="OnMagDatEdit" ToolTip.Tip="Grava campo tipado no 11/xxxx.bin via overlay"/>
+                    </StackPanel>
+                    <TextBlock Name="FxStatus" Classes="caption" Text=""/>
+                  </StackPanel>
+                </Border>
+              </StackPanel>
+            </ScrollViewer>
+          </TabItem>
+          <TabItem Header="Dados">
+            <ScrollViewer>
+              <StackPanel Margin="16" Spacing="12">
+                <Border Classes="card">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="TABELAS KERNEL" Classes="section"/>
+                    <TextBlock Classes="caption" TextWrapping="Wrap"
+                               Text="command.bin / monmagic*.bin / item.bin (formato Excel header-driven, 96B). Lê do assets_root; edições salvam cópia patchada em .lab/out/kernel/ + overlay JSON — vanilla intacta."/>
+                    <Grid ColumnDefinitions="Auto,*">
+                      <TextBlock Grid.Column="0" Text="Tabela" VerticalAlignment="Center" Classes="secondary"/>
+                      <ComboBox Grid.Column="1" Name="KernelTableBox" Margin="10,0,0,0"
+                                AutomationProperties.Name="Tabela kernel" SelectedIndex="0">
+                        <ComboBoxItem>command.bin</ComboBoxItem>
+                        <ComboBoxItem>monmagic1.bin</ComboBoxItem>
+                        <ComboBoxItem>monmagic2.bin</ComboBoxItem>
+                        <ComboBoxItem>item.bin</ComboBoxItem>
+                        <ComboBoxItem>monster1.bin</ComboBoxItem>
+                        <ComboBoxItem>monster2.bin</ComboBoxItem>
+                        <ComboBoxItem>monster3.bin</ComboBoxItem>
+                        <ComboBoxItem>a_ability.bin</ComboBoxItem>
+                        <ComboBoxItem>important.bin</ComboBoxItem>
+                        <ComboBoxItem>panel.bin</ComboBoxItem>
+                        <ComboBoxItem>sphere.bin</ComboBoxItem>
+                        <ComboBoxItem>ply_rom.bin</ComboBoxItem>
+                        <ComboBoxItem>ply_save.bin</ComboBoxItem>
+                        <ComboBoxItem>w_name.bin</ComboBoxItem>
+                      </ComboBox>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <Button Name="KernelLoadBtn" Classes="primary" Content="Carregar tabela"
+                              Click="OnKernelLoad" ToolTip.Tip="Lê a tabela do assets_root (new_uspc)"/>
+                      <Button Name="KernelSaveBtn" Content="Salvar patch" Click="OnKernelSave" IsEnabled="False"
+                              ToolTip.Tip="Grava cópia editada em .lab/out/kernel/ + overlay JSON de proveniência"/>
+                      <Button Name="KernelAddBtn" Content="Adicionar registro" Click="OnKernelAdd"
+                              ToolTip.Tip="Duplica o registro selecionado no fim da tabela (count+stride bump, pool intacto)"/>
+                    </StackPanel>
+                    <TextBlock Name="KernelStatus" Classes="caption" Text=""/>
+                  </StackPanel>
+                </Border>
+                <Grid ColumnDefinitions="260,*">
+                  <Border Classes="card">
+                    <StackPanel Spacing="6">
+                      <TextBlock Text="REGISTROS" Classes="section"/>
+                      <ListBox Name="KernelList" MinHeight="340" MaxHeight="420"
+                               SelectionChanged="OnKernelSel" AutomationProperties.Name="Registros da tabela"/>
+                    </StackPanel>
+                  </Border>
+                  <Border Classes="card" Grid.Column="1" Margin="12,0,0,0">
+                    <StackPanel Spacing="8">
+                      <TextBlock Text="REGISTRO" Classes="section"/>
+                      <TextBox Name="KernelInfo" Classes="mono" IsReadOnly="True"
+                               AcceptsReturn="True" TextWrapping="Wrap" MinHeight="120"
+                               Text="carregue uma tabela e selecione um registro."/>
+                      <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="MP" Name="FldL0" VerticalAlignment="Center" Classes="secondary"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" Name="FldMp" Margin="8,0,12,4" AutomationProperties.Name="Custo MP"/>
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="Power" Name="FldL1" VerticalAlignment="Center" Classes="secondary"/>
+                        <TextBox Grid.Row="0" Grid.Column="3" Name="FldPow" Margin="8,0,0,4" AutomationProperties.Name="Poder"/>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Hits" Name="FldL2" VerticalAlignment="Center" Classes="secondary"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" Name="FldHit" Margin="8,0,12,4" AutomationProperties.Name="Hit count"/>
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text="Element" Name="FldL3" VerticalAlignment="Center" Classes="secondary"/>
+                        <TextBox Grid.Row="1" Grid.Column="3" Name="FldElem" Margin="8,0,0,4" AutomationProperties.Name="Element flags" ToolTip.Tip="bitfield: 1=fire 2=ice 4=thunder 8=water 0x10=holy"/>
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Accuracy" Name="FldL4" VerticalAlignment="Center" Classes="secondary"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" Name="FldAcc" Margin="8,0,12,4" AutomationProperties.Name="Precisão"/>
+                        <TextBlock Grid.Row="2" Grid.Column="2" Text="Formula" Name="FldL5" VerticalAlignment="Center" Classes="secondary"/>
+                        <TextBox Grid.Row="2" Grid.Column="3" Name="FldFormula" Margin="8,0,0,4" AutomationProperties.Name="Fórmula de dano"/>
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="MoveRank" Name="FldL6" VerticalAlignment="Center" Classes="secondary"/>
+                        <TextBox Grid.Row="3" Grid.Column="1" Name="FldRank" Margin="8,0,12,0" AutomationProperties.Name="CTB rank"/>
+                        <TextBlock Grid.Row="3" Grid.Column="2" Text="CritBonus" Name="FldL7" VerticalAlignment="Center" Classes="secondary"/>
+                        <TextBox Grid.Row="3" Grid.Column="3" Name="FldCrit" Margin="8,0,0,0" AutomationProperties.Name="Bônus de crítico"/>
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Nome" VerticalAlignment="Center" Classes="secondary"/>
+                        <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Name="FldName" Margin="8,4,0,0"
+                                 AutomationProperties.Name="Nome do registro" ToolTip.Tip="ASCII US; renomear apenda ao text pool e reponta o offset — strings compartilhadas não são tocadas"/>
+                      </Grid>
+                      <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Name="KernelApplyBtn" Classes="primary" Content="Aplicar ao registro"
+                                Click="OnKernelApply" ToolTip.Tip="Aplica os campos na cópia em memória (dirty)"/>
+                        <Button Name="KernelRevertBtn" Content="Descartar edições" Click="OnKernelRevert"
+                                ToolTip.Tip="Relê a tabela original, descartando edições em memória"/>
+                      </StackPanel>
+                    </StackPanel>
+                  </Border>
+                </Grid>
+                <Border Classes="card" Margin="0,12,0,0">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="TEXTO DO JOGO (*_txt.bin)" Classes="section"/>
+                    <TextBlock Classes="caption" TextWrapping="Wrap"
+                               Text="Tabelas de texto (HelpText 8B / NameHelpText 16B — slots standard+simplified). Editar reescreve o slot standard via append no pool; controle codes &lt;Cn&gt; não são editáveis."/>
+                    <Grid ColumnDefinitions="Auto,*">
+                      <TextBlock Grid.Column="0" Text="Arquivo" VerticalAlignment="Center" Classes="secondary"/>
+                      <ComboBox Grid.Column="1" Name="TxtTableBox" Margin="10,0,0,0"
+                                AutomationProperties.Name="Tabela de texto" SelectedIndex="0">
+                        <ComboBoxItem>btl_txt.bin</ComboBoxItem>
+                        <ComboBoxItem>name_txt.bin</ComboBoxItem>
+                        <ComboBoxItem>item_txt.bin</ComboBoxItem>
+                        <ComboBoxItem>menu_txt.bin</ComboBoxItem>
+                        <ComboBoxItem>mmain_txt.bin</ComboBoxItem>
+                        <ComboBoxItem>save_txt.bin</ComboBoxItem>
+                        <ComboBoxItem>status_txt.bin</ComboBoxItem>
+                        <ComboBoxItem>summon_txt.bin</ComboBoxItem>
+                        <ComboBoxItem>arms_txt.bin</ComboBoxItem>
+                        <ComboBoxItem>btlend_txt.bin</ComboBoxItem>
+                        <ComboBoxItem>build_txt.bin</ComboBoxItem>
+                        <ComboBoxItem>config_txt.bin</ComboBoxItem>
+                      </ComboBox>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <Button Name="TxtLoadBtn" Classes="primary" Content="Carregar texto"
+                              Click="OnTxtLoad" ToolTip.Tip="Lê a tabela *_txt.bin do assets_root"/>
+                      <Button Name="TxtSaveBtn" Content="Salvar patch" Click="OnTxtSave" IsEnabled="False"
+                              ToolTip.Tip="Grava cópia editada em .lab/out/kernel/ + overlay JSON"/>
+                    </StackPanel>
+                    <Grid ColumnDefinitions="280,*">
+                      <ListBox Name="TxtList" MinHeight="200" MaxHeight="300"
+                               SelectionChanged="OnTxtSel" AutomationProperties.Name="Registros de texto"/>
+                      <StackPanel Grid.Column="1" Margin="12,0,0,0" Spacing="8">
+                        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+                          <TextBlock Grid.Row="0" Grid.Column="0" Text="slot" VerticalAlignment="Center" Classes="secondary"/>
+                          <ComboBox Grid.Row="0" Grid.Column="1" Name="TxtSlot" Margin="8,0,0,4"
+                                    SelectionChanged="OnTxtSel" AutomationProperties.Name="Slot de texto">
+                            <ComboBoxItem>standard (0)</ComboBoxItem>
+                            <ComboBoxItem>simplified (1)</ComboBoxItem>
+                            <ComboBoxItem>help.standard (2)</ComboBoxItem>
+                            <ComboBoxItem>help.simplified (3)</ComboBoxItem>
+                          </ComboBox>
+                          <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Name="TxtEdit"
+                                   AutomationProperties.Name="Texto" ToolTip.Tip="ASCII US apenas"/>
+                        </Grid>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                          <Button Name="TxtApplyBtn" Classes="primary" Content="Aplicar ao registro"
+                                  Click="OnTxtApply" ToolTip.Tip="Apenda ao pool + reponta o offset do slot"/>
+                        </StackPanel>
+                      </StackPanel>
+                    </Grid>
+                    <TextBlock Name="TxtStatus" Classes="caption" Text=""/>
+                  </StackPanel>
+                </Border>
+              </StackPanel>
+            </ScrollViewer>
+          </TabItem>
+        </TabControl>
+
+      </DockPanel>
+
+      <GridSplitter Grid.Column="3" Background="Transparent" Width="4"/>
+
+      <!-- inspector -->
+      <Grid Grid.Column="4">
+      <DockPanel Name="InspectorPanel" Margin="8,12,12,12">
+        <StackPanel Spacing="12">
+          <DockPanel>
+            <TextBlock Text="INSPECTOR" Classes="section"/>
+            <Button Classes="ghost" Content="»" Padding="6,0" MinHeight="24" MinWidth="24"
+                    HorizontalAlignment="Right"
+                    Click="OnInspectorCollapse" ToolTip.Tip="Recolher inspector"/>
+          </DockPanel>
+          <Border Classes="card">
+            <StackPanel Spacing="8">
+              <TextBlock Name="SceneTitle" FontSize="{StaticResource TextLg}" FontWeight="SemiBold"
+                         Text="Nenhuma cena selecionada" TextWrapping="Wrap"/>
+              <TextBlock Name="SceneInfo" Classes="mono" Text=""/>
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Name="OpenBtn" IsEnabled="False" Classes="primary" Content="Abrir" Click="OnViewport"
+                        ToolTip.Tip="Carregar esta cena no viewport (mesmo botão da aba Cena)"/>
+              </StackPanel>
+            </StackPanel>
+          </Border>
+          <Border Classes="card" Name="PropsCard" IsVisible="False">
+            <StackPanel Spacing="4">
+              <TextBlock Text="PROPRIEDADES" Classes="section"/>
+              <TextBlock Name="PropsText" Classes="mono" Text=""/>
+            </StackPanel>
+          </Border>
+        </StackPanel>
+      </DockPanel>
+      <Border Name="InspectorRail" IsVisible="False" Margin="0,12,0,12"
+              Background="{StaticResource LabBgSurface}" BorderBrush="{StaticResource LabBorder}"
+              BorderThickness="1,1,0,1" CornerRadius="8,0,0,8" Width="28"
+              HorizontalAlignment="Right">
+        <StackPanel>
+          <Button Classes="ghost" Content="«" Padding="0" MinHeight="28" MinWidth="26"
+                  Click="OnInspectorExpand" ToolTip.Tip="Expandir inspector"/>
+          <LayoutTransformControl HorizontalAlignment="Center" Margin="0,8,0,0">
+            <LayoutTransformControl.LayoutTransform>
+              <RotateTransform Angle="90"/>
+            </LayoutTransformControl.LayoutTransform>
+            <TextBlock Text="INSPECTOR" Classes="section"/>
+          </LayoutTransformControl>
+        </StackPanel>
+      </Border>
+      </Grid>
+    </Grid>
+
+    <!-- ================= status bar ================= -->
+    <Border Grid.Row="2" Background="{StaticResource LabBgSurface}"
+            BorderBrush="{StaticResource LabBorder}" BorderThickness="0,1,0,0"
+            Padding="14,0">
+      <DockPanel VerticalAlignment="Center">
+        <TextBlock Name="StatusText" Classes="caption" VerticalAlignment="Center"
+                   Text="pronto"/>
+        <TextBlock Name="StatsText" Classes="caption" VerticalAlignment="Center"
+                   HorizontalAlignment="Right" Text=""/>
+      </DockPanel>
+    </Border>
+  </Grid>
+</Window>
