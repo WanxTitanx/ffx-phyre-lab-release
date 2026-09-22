@@ -22,6 +22,9 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        var iconUri = new Uri("avares://PhyreInspector/Assets/app-icon.png");
+        if (AssetLoader.Exists(iconUri))
+            Icon = new WindowIcon(AssetLoader.Open(iconUri));
         _workDir = Path.Combine(Path.GetTempPath(), "phyre-inspector");
         RootBox.Text = Path.Combine(InspectorCore.RepoRoot, ".lab", "corpus");
 

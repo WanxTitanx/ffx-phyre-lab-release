@@ -3,6 +3,7 @@ using System.Buffers.Binary;
 using System.Text.Json;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Platform;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
@@ -107,6 +108,9 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        var iconUri = new Uri("avares://FfxLab/Assets/app-icon.png");
+        if (AssetLoader.Exists(iconUri))
+            Icon = new WindowIcon(AssetLoader.Open(iconUri));
         SceneTree.SelectionChanged += OnSel;
         RefreshViewportButtons();
         LoadScenes();
